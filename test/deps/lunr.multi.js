@@ -39,16 +39,22 @@
             var nameSuffix = languages.join('-');
             var wordCharacters = "";
             var pipeline = [];
+            var searchPipeline = [];
             for (var i = 0; i < languages.length; ++i) {
                 if (languages[i] == 'en') {
                     wordCharacters += '\\w';
                     pipeline.unshift(lunr.stopWordFilter);
                     pipeline.push(lunr.stemmer);
+                    searchPipeline.push(lunr.stemmer);
                 } else {
-                    
                     wordCharacters += lunr[languages[i]].wordCharacters;
-                    pipeline.unshift(lunr[languages[i]].stopWordFilter);
-                    pipeline.push(lunr[languages[i]].stemmer);
+                    if (lunr[languages[i]].stopWordFilter) {
+                        pipeline.unshift(lunr[languages[i]].stopWordFilter);
+                    }
+                    if (lunr[languages[i]].stemmer) {
+                        pipeline.push(lunr[languages[i]].stemmer);
+                        searchPipeline.push(lunr[languages[i]].stemmer);
+                    }
                 }
             };
             var multiTrimmer = lunr.trimmerSupport.generateTrimmer(wordCharacters);
@@ -57,7 +63,16 @@
 
             return function() {
                 this.pipeline.reset();
+
                 this.pipeline.add.apply(this.pipeline, pipeline);
+
+                // for lunr version 2
+                // this is necessary so that every searched word is also stemmed before
+                // in lunr <= 1 this is not needed, as it is done using the normal pipeline
+                if (this.searchPipeline) {
+                    this.searchPipeline.reset();
+                    this.searchPipeline.add.apply(this.searchPipeline, searchPipeline);
+                }
             };
         }
     }

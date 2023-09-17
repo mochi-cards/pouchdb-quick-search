@@ -75,6 +75,20 @@ function tests(dbName, dbType) {
       });
     });
 
+    it('basic search with punctuation', function () {
+      return db.bulkDocs({docs: docs}).then(function () {
+        var opts = {
+          fields: ['title', 'text', 'desc'],
+          query: 'thereof'
+        };
+        return db.search(opts);
+      }).then(function (res) {
+        res.rows.length.should.equal(1);
+        res.rows[0].id.should.equal('1');
+        res.rows[0].score.should.be.above(0);
+      });
+    });
+
     it('basic search - zero results', function () {
       return db.bulkDocs({docs: docs}).then(function () {
         var opts = {
