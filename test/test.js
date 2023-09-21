@@ -19,11 +19,10 @@ chai.use(require("chai-as-promised"));
 var should = chai.should(); // var should = chai.should();
 require('bluebird'); // var Promise = require('bluebird');
 
-// have to make this global for the languages plugin, sadly
-global.lunr = require('lunr');
-require('./deps/lunr.stemmer.support')(global.lunr);
-require('./deps/lunr.fr')(global.lunr);
-require('./deps/lunr.multi')(global.lunr);
+var lunrStemmer = require('./deps/lunr.stemmer.support');
+var lunrFr = require('./deps/lunr.fr');
+var lunrMulti = require('./deps/lunr.multi');
+
 var dbs;
 if (process.browser) {
   dbs = 'testdb' + Math.random();
@@ -643,6 +642,18 @@ function tests(dbName, dbType) {
 
     it('indexes english and french simultaneously', function () {
       return db.bulkDocs({docs: docs7}).then(function () {
+        var opts = {
+          fields: ['text'],
+          language: 'fr',
+          build: true,
+          lunrOptions: function(lunr) {
+            lunrStemmer(lunr);
+            lunrFr(lunr);
+            lunrMulti(lunr);
+          }
+        };
+        return db.search(opts);
+      }).then(function (res) {
         var opts = {
           fields: ['text'],
           query: 'parlera',
