@@ -1,6 +1,11 @@
 PouchDB Quick Search
 =====
 
+Fork notes:
+- Applies pouchdb-community/pouchdb-quick-search#99 Change md5 dependency
+- Applies pouchdb-community/pouchdb-quick-search#85 check for pouchdb through global variable
+
+
 [![Build Status](https://travis-ci.org/nolanlawson/pouchdb-quick-search.svg)](https://travis-ci.org/nolanlawson/pouchdb-quick-search)
 
 ```js
