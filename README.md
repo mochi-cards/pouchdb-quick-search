@@ -84,6 +84,7 @@ API
 * [Filtering documents](#filtering-documents)
 * [Building the index](#building-the-index)
 * [Passing Options to lunr.js during build](#passing-options-to-lunr.js-during-build)
+* [Defining a getText function](#defining-a-get-text-function)
 * [Deleting the index](#deleting-the-index)
 * [Stale queries](#stale-queries)
 * [Other languages](#other-languages)
@@ -447,6 +448,21 @@ pouch.search({
 ```
 More info on the lunr.js methods available here: http://lunrjs.com/docs/
 
+### Defining a `getText` function
+
+You can pass in a custom function for each field that will be used to get the text for that field.
+
+```js
+pouch.search({
+  fields: ['title', 'text'],
+  getText: {
+    title: function(doc) {
+        return Mustache.render(doc.title, { name: "John" });
+    }
+  },
+  build: true
+});
+```
 
 ### Deleting the index
 

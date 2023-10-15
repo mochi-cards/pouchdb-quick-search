@@ -812,5 +812,27 @@ function tests(dbName, dbType) {
         });
     });
 
+    it('supports custom getText function', function () {
+      return db.bulkDocs({docs: docs}).then(function () {
+        var opts = {
+          fields: ['title', 'text', 'desc'],
+          getText: {
+            title: function(doc) {
+              if (doc._id === '2') {
+                return 'Quixotic';
+              } else {
+                return doc.title;
+              }
+            }
+          },
+          query: 'quixotic'
+        };
+        return db.search(opts);
+      }).then(function (res) {
+        res.rows.length.should.equal(1);
+        res.rows[0].id.should.equal('2');
+        res.rows[0].score.should.be.above(0);
+      });
+    });
   });
 }
