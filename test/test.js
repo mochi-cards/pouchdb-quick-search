@@ -60,8 +60,10 @@ function tests(dbName, dbType) {
       return db.destroy();
     });
 
-    var wildcardSearch = function({query, text}, shouldFind) {
-      return db.bulkDocs({docs: {text: 'foobar'}}).then(function () {
+    var wildcardSearch = function(opts, shouldFind) {
+      var query = opts.query,
+          text = opts.text;
+      return db.bulkDocs({docs: {text: text}}).then(function () {
         var opts = {
           fields: ['text'],
           query: query
