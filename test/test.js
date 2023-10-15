@@ -49,6 +49,51 @@ function tests(dbName, dbType) {
 
   var db;
 
+  describe('wildcard matching', function() {
+    this.timeout(30000);
+
+    beforeEach(function () {
+      db = new Pouch(dbName);
+      return db;
+    });
+    afterEach(function () {
+      return db.destroy();
+    });
+
+    var wildcardSearch = function({query, text}, shouldFind) {
+      return db.bulkDocs({docs: {text: 'foobar'}}).then(function () {
+        var opts = {
+          fields: ['text'],
+          query: query
+        };
+        return db.search(opts);
+      }).then(function (res) {
+        if (shouldFind) {
+          res.rows.length.should.equal(1);
+        } else {
+          res.rows.length.should.equal(0);
+        }
+      });
+    };
+
+    it ('matches leading wildcards', function() {
+      wildcardSearch({query: '*oobar', text: 'foobar'}, true);
+      wildcardSearch({query: '*bar',   text: 'foobar'}, true);
+    });
+    it ('matches trailing wildcards', function() {
+      wildcardSearch({query: 'fooba*', text: 'foobar'}, true);
+      wildcardSearch({query: 'foo*',   text: 'foobar'}, true);
+    });
+    it ('matches center wildcards', function() {
+      wildcardSearch({query: 'foo*ar', text: 'foobar'}, true);
+      wildcardSearch({query: 'foo*ar', text: 'foo'},    false);
+    });
+    it ('matches surrounding wildcards', function() {
+      wildcardSearch({query: '*ooba*', text: 'foobar'}, true);
+      wildcardSearch({query: '*oob*',  text: 'foobar'}, true);
+    });
+  });
+
   describe(dbType + ': search test suite', function () {
     this.timeout(30000);
 
