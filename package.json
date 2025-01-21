@@ -60,7 +60,7 @@
     "request": "^2.36.0",
     "sauce-connect-launcher": "^0.14.0",
     "selenium-standalone": "^5.1.0",
-    "uglify-js": "^2.4.13",
+    "uglify-js": "^3.19.3",
     "watchify": "^3.1.0",
     "wd": "^0.2.21"
   },

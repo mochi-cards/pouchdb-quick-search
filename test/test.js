@@ -881,5 +881,21 @@ function tests(dbName, dbType) {
         res.rows[0].score.should.be.above(0);
       });
     });
+
+    it('matches wildcard longer than stemmed word', function () {
+      return db.bulkDocs({docs: docs}).then(function () {
+        var opts = {
+          fields: ['title', 'text', 'desc'],
+          query: "possibilit*"
+          //query: "possibl"
+        };
+        return db.search(opts);
+      }).then(function (res) {
+        res.rows.length.should.equal(1);
+        res.rows[0].id.should.equal('1');
+        //res.rows[0].score.should.be.above(0);
+      });
+    });
+
   });
 }
