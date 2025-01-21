@@ -2,7 +2,10 @@
 'use strict';
 
 var Pouch = require('pouchdb-memory');
-var uniq = require('uniq');
+
+var uniq = function(a) {
+  return Array.from(new Set(a));
+}
 
 //
 // your plugin goes here
@@ -115,6 +118,7 @@ function tests(dbName, dbType) {
         };
         return db.search(opts);
       }).then(function (res) {
+        console.log(res);
         res.rows.length.should.equal(1);
         res.rows[0].id.should.equal('3');
         res.rows[0].score.should.be.above(0);
@@ -879,6 +883,36 @@ function tests(dbName, dbType) {
         res.rows.length.should.equal(1);
         res.rows[0].id.should.equal('2');
         res.rows[0].score.should.be.above(0);
+      });
+    });
+
+    it('matches wildcard shorter than stemmed word', function () {
+      return db.bulkDocs({docs: docs}).then(function () {
+        var opts = {
+          fields: ['title', 'text', 'desc'],
+          //query: "possibilit"
+          query: "poss"
+        };
+        return db.search(opts);
+      }).then(function (res) {
+        res.rows.length.should.equal(1);
+        res.rows[0].id.should.equal('1');
+        //res.rows[0].score.should.be.above(0);
+      });
+    });
+
+    it('matches wildcard longer than stemmed word', function () {
+      return db.bulkDocs({docs: docs}).then(function () {
+        var opts = {
+          fields: ['title', 'text', 'desc'],
+          query: "possibilit"
+          //query: "possibl"
+        };
+        return db.search(opts);
+      }).then(function (res) {
+        res.rows.length.should.equal(1);
+        res.rows[0].id.should.equal('1');
+        //res.rows[0].score.should.be.above(0);
       });
     });
   });
