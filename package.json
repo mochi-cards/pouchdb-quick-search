@@ -39,8 +39,9 @@
     "lie": "^2.6.0",
     "lunr": "2.3.9",
     "md5": "2.3.0",
+    "pouchdb-collate": "1.2.0",
     "pouchdb-extend": "^0.1.0",
-    "pouchdb-mapreduce-no-ddocs": "^2.3.2",
+    "pouchdb-mapreduce-no-ddocs": "github:mochi-cards/pouchdb-mapreduce-no-ddocs",
     "pouchdb-promise": "5.4.4"
   },
   "devDependencies": {

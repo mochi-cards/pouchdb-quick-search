@@ -30979,14 +30979,19 @@ function queryViewInQueue(view, opts) {
   }
 
   if (typeof opts.keys !== 'undefined') {
-    var keys = opts.keys;
-    var fetchPromises = keys.map(function (key) {
-      var viewOpts = {
-        startkey : pouchdbCollate.toIndexableString([key]),
-        endkey   : pouchdbCollate.toIndexableString([key, {}])
-      };
-      return fetchFromView(viewOpts);
-    });
+    if (opts._raw_keys) {
+      return fetchFromView({ keys: opts.keys }).then(onMapResultsReady);
+    } else {
+      var keys = opts.keys;
+      var fetchPromises = keys.map(function (key) {
+        var viewOpts = {
+          startkey : pouchdbCollate.toIndexableString([key]),
+          endkey   : pouchdbCollate.toIndexableString([key, {}])
+        };
+        return fetchFromView(viewOpts);
+      });
+    }
+
     return Promise.all(fetchPromises).then(pouchdbUtils.flatten).then(onMapResultsReady);
   } else { // normal query, no 'keys'
     var viewOpts = {
@@ -37919,6 +37924,8 @@ Object.keys(mapReduce).forEach(function (key) {
   exports[key] = mapReduce[key];
 });
 
+var toIndexableString = require(169).toIndexableString;
+
 var utils = require(1);
 var lunr = require(149);
 //var uniq = require('uniq');
@@ -38346,7 +38353,12 @@ exports.search = utils.toPromise(function (opts, callback) {
 
     var queryOpts = {
       saveAs: persistedIndexName,
-      keys: keys,
+      // We are going to bypass .query and use allDocs directly because .query is so slow.
+      // The reason it's so slow is because it uses prefix search on each key individually,
+      // which is not necessary for us because we know the entire key value.
+      _raw_keys: true,
+        // The key is serialized version of [TYPE_DOC_INFO + docId, docId]
+      keys: keys.map(function(k) { return toIndexableString([k, k.substring(1)]); }),
       stale: stale
     };
 
@@ -38543,5 +38555,5 @@ if (typeof PouchDB !== 'undefined') {
   PouchDB.plugin(exports);
 }
 
-},{"1":1,"145":145,"149":149,"174":174}]},{},[226])(226)
+},{"1":1,"145":145,"149":149,"169":169,"174":174}]},{},[226])(226)
 });
