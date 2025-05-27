@@ -2,6 +2,7 @@ PouchDB Quick Search
 =====
 
 Fork notes:
+- Applies https://github.com/leonid-shevtsov/pouchdb-quick-search/commit/9bf91d656a5f9c93ba62beb52831d60b650e1731 Remove crypto dependency
 - Applies pouchdb-community/pouchdb-quick-search#99 Change md5 dependency
 - Applies pouchdb-community/pouchdb-quick-search#85 check for pouchdb through global variable
 - Applies pouchdb-community/pouchdb-quick-search#90 Add lunr.js options when building the index
